@@ -1,7 +1,7 @@
 # 🚦 GCP Databricks Project
 
 ---
-## 🟢 Set up databricks free account in GCP Free Tier
+## 🟡 Set up databricks free account in GCP Free Tier
 ---
 
 ## 🟢 Dev Environment Setup
