@@ -2,7 +2,6 @@
 
 ---
 ## 🟡 Set up databricks free account in GCP Free Tier
----
 
 ## 🟢 Dev Environment Setup
 - **Create Dev Project in GCP** → `project-dev-date`  
