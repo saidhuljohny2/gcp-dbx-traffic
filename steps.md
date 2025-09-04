@@ -1,142 +1,157 @@
-# 🚦 GCP Databricks Project
+# -------------------> GCP Databricks Project <---------------------
 
----
-## 🟡 Set up databricks free account in GCP Free Tier
+## Databricks Setup
 
-## 🟢 Dev Environment Setup
-- **Create Dev Project in GCP** → `project-dev-date`  
-- **Create Dev Bucket in GCS** → `bkt-dev-date`  
-  - **Folders**  
-    1. 📂 **landing**  
-       - raw_traffic  
-       - raw_roads  
-    2. 📂 **checkpoints**  
-    3. 📂 **medallion**  
-       - bronze  
-       - silver  
-       - gold  
+- **Set up Databricks free account** in **GCP Free Tier**
 
-- **Create Dev Workspace in Databricks** → `dbx-dev-ws`  
-- **Create Catalog** → `dev_catalog`  
-- **Create Dev Storage Credential** → `bkt-dev-creds`  
-
-- **Create External Locations** (5)  
-  - landing_dev  
-  - checkpoints_dev  
-  - bronze_dev  
-  - silver_dev  
-  - gold_dev  
-
-- **Create Databricks Cluster** → `dev-cluster`  
+- **Go to Databricks account console**
+  - Create **UC Metastore** in `us-central1` region → **gcp-dbx-ms**
+  - Create two workspaces:
+    - **Dev** → `dbx-dev-ws` (us-central1)
+    - **UAT** → `dbx-uat-ws` (us-central1)
+  - Assign workspaces to the metastore
 
 ---
 
-## 🟡 Schema & Table Creation
-- **Schemas (01)**  
-  - bronze  
-  - silver  
-  - gold  
+## Setup Dev Environment
 
-- **Tables (02)**  
-  - raw_roads  
-  - raw_traffic  
+- **Create Dev Project** in GCP → `project-dev-date`
+- **Create Dev Bucket** in GCS → `bkt-dev-date`
+  - **Folders**:
+    1. `landing`
+       - `raw_traffic`
+       - `raw_roads`
+    2. `checkpoints`
+    3. `medallion`
+       - `bronze`
+       - `silver`
+       - `gold`
 
----
+- **Create Catalog** → `dev_catalog`
+- **Create Dev Storage Credentials** → `bkt-dev-creds`
+- **Create 5 External Locations** to access GCS:
+  - `landing_dev`
+  - `checkpoints_dev`
+  - `bronze_dev`
+  - `silver_dev`
+  - `gold_dev`
 
-## 🟠 ETL Pipeline (Landing → Medallion Architecture)
-
-### Landing → Bronze (03)
-- Use **Autoloader in Batch Mode**  
-- Upload sample data → raw_traffic & raw_roads  
-- Execute the notebook  
-- Test by adding one more file and re-executing  
-
----
-
-### Bronze → Silver (04,05)
-- Use **Structured Streaming in Batch Mode**  
-- Execute the notebook  
-- Test by adding one more file and re-executing  
+- **Create Databricks Cluster** → `dev-cluster`
 
 ---
 
-### Commons Notebook
-- Store **common variables**  
-- Store **common functions** used in transformations  
+### Development Steps
+
+1. **Create Schemas Dynamically (01)**
+   - bronze  
+   - silver  
+   - gold  
+
+2. **Create Tables Dynamically (02)**
+   - raw_roads  
+   - raw_traffic  
+
+3. **Landing to Bronze (03)**
+   - Use **Autoloader** in batch mode  
+   - Upload sample data to `raw_traffic` and `raw_roads`  
+   - Execute the notebook  
+   - Add one more file for testing and re-execute (later will schedule this)  
+
+4. **Bronze to Silver (04,05)**
+   - Use **Structured Streaming** in batch mode  
+   - Execute the notebook  
+   - Add one more file for testing and re-execute (later will schedule this)  
+
+5. **Commons Notebook**
+   - Store common variables and functions used in transformations  
+
+6. **Silver to Gold (06)**
+   - Apply reporting requirements and transformations  
+   - Write to **Gold tables**  
 
 ---
 
-### Silver → Gold (06)
-- Apply transformations as per reporting requirements  
-- Write results to **Gold Tables**  
+### Orchestration
+
+- Update notebooks to **job ready**
+- Create a job → **ETL Workflow**
+  - **Task1** → load_to_bronze (03)
+  - **Task2** → silver_traffic (04)
+  - **Task3** → silver_roads (05)
+  - **Task4** → gold (06)
+
+- **Add Triggers**
+  - **File Arrival** (traffic data arrives frequently)
+    - Select the `landing/traffic` folder
+    - Add notification for success/failure
+    - Upload a sample file for testing
+  - **Schedule** (for roads data, monthly updates)
 
 ---
 
-## 🔵 Orchestration
-- Update notebooks to job-ready format  
-- Create **Job** → `ETL Workflow`  
-  - **Tasks**  
-    - Task1 → load_to_bronze (03)  
-    - Task2 → silver_traffic (04)  
-    - Task3 → silver_roads (05)  
-    - Task4 → gold (06)  
+## Setup GitHub
 
-- **Add Trigger**  
-  - File Arrival → `landing/traffic` folder  
-    - Notification for success/failure  
-    - Upload sample file for testing  
-  - Schedule → For `roads` dataset (monthly updates)  
+- Create **new public repo** → `gcp-dbx-traffic`
+- Integrate repo with each Databricks:
+  - Settings → Linked Accounts → Add Git Integration → Link Git Account → Sign-In
+  - Workspace → Repos → Add Git Folder → Main branch → Success
+  - Create **dev**, **uat** branches
+
+- **Project Flow**:  
+  `dev` → `uat` → `prd (main)`
 
 ---
 
-## 🟣 UAT Environment Setup
-- **Create UAT Project in GCP** → `project-uat-date`  
-- **Create UAT Bucket in GCS** → `bkt-uat-date`  
-  - **Folders**  
-    1. landing → raw_traffic, raw_roads  
-    2. checkpoints  
-    3. medallion → bronze, silver, gold  
+## Back to Dev
 
-- **Create UAT Workspace in Databricks** → `gcp-dbx-uat`  
-- **Create Catalog** → `uat_catalog`  
-- **Create Storage Credential** → `bkt-uat-creds`  
-
-- **Create External Locations (5)**  
-  - landing_uat  
-  - checkpoints_uat  
-  - bronze_uat  
-  - silver_uat  
-  - gold_uat  
-
-- **Create Databricks Cluster** → `uat-cluster`  
+- All development is done in **Dev**
+- Clone project code → **commit & push**
+- Update pipeline to Git (url, branch) for all tasks and choose notebook path
+- Run and test pipeline → **Success**
 
 ---
 
-## 🟤 GitHub Integration
-- Create repo → `gcp-dbx-traffic`  
-- Integrate GitHub with Databricks  
-  - Settings → Linked accounts → Add Git Integration → Sign-in  
-  - Workspace → Repos → Add Git Folder → `main` branch → success  
+## Setup UAT Environment
 
-- **Branching Strategy**  
-  - Dev → UAT → PRD (main)  
+- **Create UAT Project** in GCP → `project-uat-date`
+- **Create UAT Bucket** in GCS → `bkt-uat-date`
+  - **Folders**:
+    1. `landing`
+       - `raw_traffic`
+       - `raw_roads`
+    2. `checkpoints`
+    3. `medallion`
+       - `bronze`
+       - `silver`
+       - `gold`
+
+- **Create Catalog** → `dev_catalog`
+- **Create UAT Storage Credentials** → `bkt-uat-creds`
+- **Create 5 External Locations** to access GCS:
+  - `landing_uat`
+  - `checkpoints_uat`
+  - `bronze_uat`
+  - `silver_uat`
+  - `gold_uat`
+
+- **Create Databricks Cluster** → `uat-cluster`
+
+---
+
+## UAT Process
+
+- If everything runs fine in **Dev**, move to **UAT**
+- Create PR and merge (if no conflicts)
+- In Databricks UAT workspace → Add Git folder → Switch to **uat branch**
+- Execute all codes one by one with parameter `(uat)`
+- Create ETL Workflow and choose notebooks from Git
 
 ---
 
-## 🟢 Dev → UAT → PRD Workflow
-### Dev
-- Development in **dev branch**  
-- Clone project → commit & push  
-- Update pipeline with Git URL/branch + notebook path  
-- Run & test pipeline  
+## Create PRD Environment
 
-### UAT
-- Create PR → merge (if no conflicts)  
-- In UAT workspace → add Git folder → switch to `uat` branch  
-- Execute codes with parameter `(uat)`  
-- Create ETL workflow using Git notebooks  
-
-### PRD
-- Repeat same process for **prd** environment  
+- Setup PRD similar to **Dev** and **UAT**
 
 ---
+
+✅ **End of Setup**
