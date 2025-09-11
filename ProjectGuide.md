@@ -3,6 +3,9 @@
 ## 🏗️ Databricks Setup
 
 - **Set up Databricks free account** in **GCP Free Tier**
+- setup two projects
+  - 🌍 **Create Dev Project** in GCP → `project-dev-date`
+  - 🌍 **Create UAT Project** in GCP → `project-uat-date`
 
 - **Go to Databricks Account Console**
   - 🗂️ Create **UC Metastore** in `us-central1` region → **gcp-dbx-ms**
@@ -15,7 +18,6 @@
 
 ## 🛠️ Setup Dev Environment
 
-- 🌍 **Create Dev Project** in GCP → `project-dev-date`
 - 🪣 **Create Dev Bucket** in GCS → `bkt-dev-date`
   - **Folders 📂**:
     1. `landing`
@@ -113,7 +115,6 @@
 
 ## 🧪 Setup UAT Environment
 
-- 🌍 **Create UAT Project** in GCP → `project-uat-date`
 - 🪣 **Create UAT Bucket** in GCS → `bkt-uat-date`
   - **Folders 📂**:
     1. `landing`
