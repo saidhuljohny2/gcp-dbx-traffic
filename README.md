@@ -155,4 +155,3 @@ Databricks Setup:
 	7305101711 (Whatsapp)
 
 --> project --> resume --> apply --> interviews ---> all the best for your endeavours
---> sql, pyspark, autoloader, structured streaming, workflows, orchestration, ....
